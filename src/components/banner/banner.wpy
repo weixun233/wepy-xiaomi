@@ -1,0 +1,77 @@
+<style lang="sass">
+  .banner
+    .image
+      width: 100%
+      vertical-align: middle
+</style>
+<template>
+  <view class="banner" style="background: {{background}}">
+    <swiper style="height: {{height}}rpx"
+            indicator-dots="{{dots}}"
+            autoplay="{{auto}}"
+            circular="{{circular}}"
+            indicator-color="{{color}}"
+            indicator-active-color="{{activeColor}}">
+      <repeat for="{{banner}}" key="index" index="index" item="item">
+        <swiper-item>
+          <image src="{{item}}"
+                 class="image"
+                 @tap="tap"
+                 style="height: {{height}}rpx"/>
+        </swiper-item>
+      </repeat>
+    </swiper>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  export default class banner extends wepy.component {
+    props = {
+      banner: {
+        type: Array,
+        default: () => []
+      },
+      // 是否显示面板指示点 true
+      dots: {
+        type: Boolean,
+        default: true
+      },
+      // 是否自动轮播 true
+      auto: {
+        type: Boolean,
+        default: true
+      },
+      // 面板点颜色
+      color: {
+        type: String,
+        default: 'rgba(255, 255, 255, .3)'
+      },
+      // active面板点颜色
+      activeColor: {
+        type: String,
+        default: '#fff'
+      },
+      // 是否无缝循环 true
+      circular: {
+        type: Boolean,
+        default: true
+      },
+      // 图片高度
+      height: {
+        type: Number,
+        default: 400
+      },
+      // 背景颜色
+      background: {
+        type: String,
+        default: '#fff'
+      }
+    }
+    methods = {
+      tap(item, index) {
+        console.log('child is clicked')
+        this.$emit('selectBanner', 100)
+      }
+    }
+  }
+</script>

@@ -1,0 +1,192 @@
+<style lang="sass">
+  @import "../common/css/_var"
+  .index
+    height: 100%
+    .index-search
+      display: flex
+      align-items: center
+      height: 80rpx
+      background: $color-brand
+      .navigate
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 95%
+        height: 50rpx
+        margin: 0 auto
+        background: #fff
+        border-radius: 100rpx
+        text-align: center
+        .placeholder
+          display: flex
+          align-items: center
+          font-size: $font-size-28
+          color: $color-promptd
+          .icon
+            padding-right: 10rpx
+    .index-nav
+      display: flex
+      align-items: center
+      justify-content: space-between
+      .index-li
+        padding: 20rpx 0
+        flex: 0 0 20%
+        text-align: center
+        .icon
+          image
+            width: 100%
+            height: 44rpx
+        .text
+          font-size: $font-size-22
+          color: $color-promptd
+    .index-ad
+      padding: 10rpx 0
+      display: flex
+      align-items: center
+      justify-content: center
+      background: $color-bg
+      image
+        flex: 0 0 49.5%
+</style>
+<template>
+  <view class="index">
+      <!--search-->
+      <view class="index-search">
+        <navigate class="navigate" url="/page/search/search" open-type="navigate">
+          <view class="placeholder">
+            <icon class="icon" type="search" color="#bbb" size="12"></icon>
+            <text>搜索商品</text>
+          </view>
+        </navigate>
+      </view>
+      <!--banner-->
+      <banner :banner.sync="banner" :height="defaultHeight" @selectBanner.user="selectDetails"></banner>
+      <!--nav-->
+      <view class="index-nav">
+        <repeat for="{{nav}}" key="index" index="index" item="item">
+          <view class="index-li" @tap="selectChannel({{item}},{{index}})">
+            <view class="icon">
+              <image src="{{item.icon}}" mode="aspectFit"></image>
+            </view>
+            <view class="text">{{item.title}}</view>
+          </view>
+        </repeat>
+      </view>
+      <!--ad-->
+      <view class="index-ad">
+        <repeat for="{{ad}}" key="index" index="index" item="item">
+          <image src="{{item}}" @tap="selectChannel({{item}})" mode="widthFix"></image>
+        </repeat>
+      </view>
+      <!--明星单品-->
+      <starHotList :IndexListData.sync="starHotList"></starHotList>
+      <view class="hr_10"></view>
+      <!--新品上线-->
+      <newHotList :IndexListData.sync="newHotList"></newHotList>
+      <view class="hr_10"></view>
+      <!--米家智能-->
+      <myHoMeHotList :IndexListData.sync="myHoMeHotList"></myHoMeHotList>
+      <view class="hr_10"></view>
+      <!--推荐一-->
+      <oneRecommendList :IndexListData.sync="oneRecommendList"></oneRecommendList>
+      <view class="hr_10"></view>
+      <!--推荐二-->
+      <threeRecommendList :IndexListData.sync="threeRecommendList"></threeRecommendList>
+      <view class="hr_10"></view>
+      <!--推荐三-->
+      <fiveRecommendList :IndexListData.sync="fiveRecommendList"></fiveRecommendList>
+      <view class="hr_10"></view>
+      <!--推荐四-->
+      <twoRecommendList :IndexListData.sync="twoRecommendList"></twoRecommendList>
+    </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import {getIndex} from 'api/api'
+  import indexList from 'components/indexList/indexList'
+  import banner from 'components/banner/banner'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarBackgroundColor: '#FF6700',
+      navigationBarTitleText: '小米商城Lite',
+      navigationBarTextStyle: '#fff',
+      enablePullDownRefresh: true,  // 开启下拉加载
+      backgroundColor: '#ececec',
+      backgroundTextStyle: 'dark'
+    }
+    components = {
+      banner,
+      starHotList: indexList,
+      newHotList: indexList,
+      myHoMeHotList: indexList,
+      oneRecommendList: indexList,
+      threeRecommendList: indexList,
+      fiveRecommendList: indexList,
+      twoRecommendList: indexList
+    }
+    data = {
+      defaultHeight: 400,
+      banner: [],
+      nav: [],
+      ad: [],
+      starHotList: {},
+      newHotList: {},
+      myHoMeHotList: {},
+      oneRecommendList: {},
+      threeRecommendList: {},
+      fiveRecommendList: {},
+      twoRecommendList: {}
+    }
+    methods = {
+      upper() {
+        wepy.startPullDownRefresh()
+      },
+      lower() {
+        console.log('底部')
+      },
+      scroll() {
+        console.log('10')
+      },
+      // 跳转商品详情
+      selectDetails (item, index) {
+        wepy.navigateTo({
+          url: `commodity-details`
+        })
+      },
+      // 跳转频道
+      selectChannel(item) {
+        wepy.navigateTo({
+          url: `commodity-details`
+        })
+      }
+    }
+    // 监听下拉刷新事件
+    async onPullDownRefresh() {
+      await this.init()
+      wepy.stopPullDownRefresh()
+      this.$apply()
+    }
+    async init() {
+      let res = await getIndex()
+      this.banner = res.data.banner
+      this.ad = res.data.ad
+      this.nav = res.data.nav
+      this.starHotList = res.data.list[0]
+      this.newHotList = res.data.list[1]
+      this.myHoMeHotList = res.data.list[2]
+      this.oneRecommendList = res.data.twoList[0]
+      this.threeRecommendList = res.data.twoList[1]
+      this.fiveRecommendList = res.data.twoList[2]
+      this.twoRecommendList = res.data.twoList[3]
+      this.$apply()
+    }
+    async onLoad() {
+      await this.init()
+      this.$apply()
+    }
+    onHide() {
+      console.log('hide')
+    }
+  }
+</script>

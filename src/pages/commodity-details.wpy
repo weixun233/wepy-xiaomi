@@ -1,0 +1,205 @@
+<style lang="sass">
+  @import "../common/css/_var"
+  .commodity-details
+    .pro-info
+      padding: 20rpx 32rpx
+      .title
+        color: $color-title
+        font-size: $font-size-28
+      .small
+        padding: 8rpx 0
+        color: $color-tab
+        font-size: $font-size-24
+    .choice
+      padding: 20rpx
+      display: flex
+      align-items: center
+      font-size: $font-size-28
+      .title
+        color: $color-tab
+      .name
+        flex: 1
+        box-sizing: border-box
+        padding-left: 80rpx
+        color: $color-title
+      .num-icon, .num
+        font-size: $font-size-22
+        color: $color-tab
+      .iconfont
+        color: $color-promptd
+        font-size: $font-size-24
+    .tab-info
+      .tab-cont
+        image
+          width: 100%
+          display: block
+  .bottomFixed-cont
+    display: flex
+    align-items: center
+    background: #fff
+    border-top: 1px solid $color-line
+    box-sizing: border-box
+    .vehicle
+      display: flex
+      padding-left: 20rpx
+      align-items: center
+      width: 100rpx
+      height: 100rpx
+      position: relative
+      .iconfont
+        font-size: 60rpx
+        color: $color-promptd
+      .user__un-read-msg-count
+        position: absolute
+        top: 14rpx
+        right: 32rpx
+    .btn-cont
+      flex: 1
+      height: 100rpx
+      display: flex
+      align-items: center
+      color: #fff
+      .btn-veh, .btn-m
+        height: 100%
+        flex: 0 0 50%
+        display: flex
+        align-items: center
+        justify-content: center
+      .btn-veh
+        background: $color-control
+        &.btn-hover
+          background: $color-money
+      .btn-m
+        background: $color-money
+        &.btn-hover
+          background: #ca3206
+</style>
+<template>
+  <view class="commodity-details">
+    <!--banner-->
+    <banner :banner.sync="banner"
+            :height="defaultHeight"
+            :background="background"
+            @selectBanner.user="selectImg"></banner>
+    <!--info-->
+    <view class="pro-info">
+      <view class="title">{{info.title}}</view>
+      <view class="small">{{info.synopsis}}</view>
+      <proMoney :moneyInfo.sync="info"></proMoney>
+    </view>
+    <view class="hr_10"></view>
+    <!--已选-->
+    <view class="choice" @tap="selectChoice">
+      <text class="title">已选</text>
+      <text class="name">
+        <text>{{info.allocation}}</text>
+        <text class="num-icon">x</text>
+        <text class="num">{{info.num}}</text>
+      </text>
+      <text class="iconfont icon-iconfontjiantou4"></text>
+    </view>
+    <view class="hr_10"></view>
+    <!--tab-->
+    <tab :tabTitle.sync="tabTitle" :tabContent.sync="tabContent" :currentIndex.sync="currentIndex"></tab>
+    <!--tabCont-->
+    <view class="tab-info" wx:if="{{tabContent.length > 0}}">
+      <repeat for="{{tabContent}}" key="indexCont" index="indexCont" item="itemCont">
+        <view class="tab-cont" wx:if="{{currentIndex === indexCont}}">
+          <repeat for="{{itemCont}}" key="index" index="index" item="item">
+            <image src="{{item}}" mode="widthFix" lazy-load></image>
+          </repeat>
+        </view>
+      </repeat>
+    </view>
+    <!--bottom-->
+    <bottomFixed>
+      <view class="bottomFixed-cont">
+        <view class="vehicle">
+          <view class="iconfont icon-daohanggouwuche"></view>
+          <wxc-badge class="user__un-read-msg-count">{{vehicleNum}}</wxc-badge>
+        </view>
+        <view class="btn-cont">
+          <view class="btn-veh" hover-class="btn-hover">加入购物车</view>
+          <view class="btn-m" hover-class="btn-hover">立即购买</view>
+        </view>
+      </view>
+    </bottomFixed>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import {getCommodity} from 'api/api'
+  import tab from 'components/tab/tab'
+  import bottomFixed from 'components/bottomFixed/bottomFixed'
+  import proMoney from 'components/proMoney/proMoney'
+  import banner from 'components/banner/banner'
+
+  export default class CommodityDetails extends wepy.page {
+    config = {
+      navigationBarTitleText: '商品详情',
+      usingComponents: {
+        'wxc-badge': '../packages/@minui/wxc-badge/dist/index'
+      }
+    }
+    components = {
+      tab,
+      bottomFixed,
+      proMoney,
+      banner
+    }
+    data = {
+      defaultHeight: 720,
+      background: '#ececec',
+      vehicleNum: 0,    // 购物车数目
+      banner: [],
+      info: {},
+      tabTitle: [],
+      tabContent: [],
+      currentIndex: 0
+    }
+    methods = {
+      // 预览图片·
+      selectImg(item) {
+        wepy.previewImage({
+          current: item, // 当前显示图片的http链接
+          urls: this.banner // 需要预览的图片http链接列表
+        })
+      },
+      // 跳转选择版本
+      selectChoice() {
+        wepy.navigateTo({
+          url: `commodity-choice`
+        })
+      }
+    }
+    async init() {
+      let res = await getCommodity()
+      this.banner = res.data.banner
+      this.info = res.data.info
+      if (this.info.summary.length > 0) {
+        this.tabTitle.push('概述')
+        this.tabContent.push(this.info.summary)
+      }
+      if (this.info.parameter.length > 0) {
+        this.tabTitle.push('参数')
+        this.tabContent.push(this.info.parameter)
+      }
+      if (this.info.accident.length > 0) {
+        this.tabTitle.push('意外险')
+        this.tabContent.push(this.info.accident)
+      }
+      this.$apply()
+    }
+    async onLoad(options) {
+      let purchase = options.purchase
+      await this.init()
+      if (purchase === '1') {
+        wepy.showToast({
+          title: '成功加入购物车'
+        })
+      }
+      this.vehicleNum = wepy.$instance.globalData.vehicle.length
+      this.$apply()
+    }
+  }
+</script>

@@ -1,0 +1,301 @@
+<style lang="sass">
+  @import "../common/css/_var"
+  .commodity-choice
+    .info
+      display: flex
+      width: 100%
+      padding: 20rpx
+      box-sizing: border-box
+      .img
+        flex: 0 0 160rpx
+        height: 160rpx
+        display: flex
+        justify-content: center
+        image
+          width: 100%
+          height: 100%
+          border: 1px solid $color-line
+          border-radius: 1px
+      .text
+        flex: 1
+        padding-left: 20rpx
+        box-sizing: border-box
+        .title
+          padding-bottom: 10rpx
+          color: $color-title
+          font-size: $font-size-28
+          .pz
+            padding: 0 10rpx
+    .cont
+      margin: 0 20rpx
+      .cont-li
+        padding: 30rpx 0
+        border-bottom: 1px solid $color-line
+      .title
+        margin-top: 20rpx
+        color: $color-tab
+        font-size: $font-size-28
+      .edition-li
+        display: flex
+        align-items: center
+        justify-content: space-between
+        font-size: $font-size-28
+        border: 1px solid $color-line
+        margin: 14rpx 0 0 0
+        padding: 10rpx 20rpx
+        border-radius: 3px
+        color: $color-tab
+        &.active
+          color: $color-control
+          border-color: $color-control
+      .color-ul
+        display: flex
+        align-items: center
+        flex-wrap: wrap
+        .color-li
+          margin-right: 10rpx
+          >text
+            padding: 0 24rpx
+      .cont-num
+        display: flex
+        align-items: center
+        justify-content: space-between
+        .title
+          flex: 1
+        .num-can
+          display: flex
+          align-items: center
+          flex: 0 0 200rpx
+          height: 70rpx
+          box-sizing: border-box
+          border: 1px solid $color-bg
+          border-radius: 3px
+          >view
+            flex: 1
+            height: 70rpx
+            line-height: 70rpx
+            box-sizing: border-box
+            text-align: center
+            &.active
+              color: $color-promptd
+          .num
+            font-size: $font-size-32
+            border-left: 1px solid $color-line
+            border-right: 1px solid $color-line
+      .read
+        padding: 24rpx 0
+        display: flex
+        align-items: center
+        font-size: $font-size-28
+        .read-icon
+          width: 38rpx
+          height: 38rpx
+        .read-label
+          width: 38rpx
+          height: 38rpx
+          border-radius: 50%
+          border: 1px solid $color-promptd
+        .default
+          padding: 0 8rpx 0 16rpx
+          color: $color-tab
+        .line
+          padding: 0 8rpx
+          color: $color-tab
+        >text
+          color: $color-control
+
+  .bottomFixed-cont
+    display: flex
+    height: 100%
+    align-items: center
+    justify-content: center
+    color: #fff
+    background: $color-control
+</style>
+<template>
+  <view class="commodity-choice">
+    <view class="info">
+      <view class="img">
+        <image src="{{imgIndex.url}}"/>
+      </view>
+      <view class="text">
+        <view class="title">
+          <text decode="{{true}}">{{title}}</text>
+          <text class="pz" wx:if="{{textIndex.edition}}">{{textIndex.edition}}</text>
+          <text class="tags" wx:if="{{imgIndex.name}}">{{imgIndex.name}}</text>
+        </view>
+        <view class="proMoney">
+          <text class="price">{{textIndex.money.price}}元</text>
+          <text class="originalCost" wx:if="{{textIndex.money.originalCost}}">{{textIndex.money.originalCost}}元</text>
+          <text class="tags" wx:if="{{textIndex.money.tags}}">{{textIndex.money.tags}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="hr_10"></view>
+    <view class="cont">
+      <!--版本-->
+      <view class="cont-li" wx:if="{{edition.length > 0}}">
+        <view class="title">版本</view>
+        <repeat for="{{edition}}" key="index" index="index" item="item">
+          <view class="edition-li {{index === editionIndex ? 'active' : ''}}" @tap="selectEdition({{item}}, {{index}})">
+            <text>{{item.edition}}</text>
+            <text>{{item.money.price}}元</text>
+          </view>
+        </repeat>
+      </view>
+      <!--颜色-->
+      <view class="cont-li" wx:if="{{proImg.length > 0}}">
+        <view class="title">颜色</view>
+        <view class="color-ul">
+          <repeat for="{{proImg}}" key="index" index="index" item="item">
+            <view class="edition-li color-li {{index === colorIndex ? 'active' : ''}}" @tap="selectColor({{item}}, {{index}})">
+              <text>{{item.name}}</text>
+            </view>
+          </repeat>
+        </view>
+      </view>
+      <!--购买数量-->
+      <view class="cont-li cont-num">
+        <view class="title">购买数量</view>
+        <view class="num-can">
+          <view class="prev {{num <= 1 ? 'active' : ''}}" @tap="selectPrev">-</view>
+          <view class="num">{{num}}</view>
+          <view class="next {{num >= maxNum ? 'active' : ''}}" @tap="selectNext">+</view>
+        </view>
+      </view>
+      <!--保险-->
+      <view wx:if="{{insurance.length > 0}}">
+        <view class="title">意外保险</view>
+        <view class="color-ul">
+          <repeat for="{{insurance}}" key="index" index="index" item="item">
+            <view class="edition-li color-li {{index === insuranceIndex ? 'active' : ''}}" @tap="selectInsurance({{item}}, {{index}})">
+              <text>{{item}}</text>
+            </view>
+          </repeat>
+        </view>
+      </view>
+      <!--阅读-->
+      <view class="read">
+        <view class="read-icon" @tap="selectRead">
+          <view class="read-label" wx:if="{{!Read}}"></view>
+          <icon type="success" size="18" wx:else></icon>
+        </view>
+        <text class="default">我已阅读</text>
+        <text>保险条款</text>
+        <text class="line">|</text>
+        <text>投保须知</text>
+        <text class="line">|</text>
+        <text>常见问题</text>
+      </view>
+    </view>
+    <view class="hr_10"></view>
+    <!--bottom-->
+    <bottomFixed>
+      <view class="bottomFixed-cont" @tap="selectOK">确定</view>
+    </bottomFixed>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import {getChoice} from 'api/api'
+  import bottomFixed from 'components/bottomFixed/bottomFixed'
+  import proMoney from 'components/proMoney/proMoney'
+  import tip from '../utils/tip'
+
+  export default class CommodityChoice extends wepy.page {
+    config = {
+      navigationBarTitleText: '选择商品',
+      navigationBarBackgroundColor: '#f7f7f7'
+    }
+    components = {
+      bottomFixed,
+      proMoney
+    }
+    data = {
+      vehicle: [],    // 购物车
+      title: '',            // 商品名
+      edition: [],          // 版本
+      proImg: [],           // 颜色
+      insurance: [],        // 意外险
+      colorIndex: 0,        // 颜色index
+      editionIndex: 0,       // 版本index
+      insuranceIndex: -1,    // 意外险index
+      Read: false,           // 已阅读
+      num: 1,                // 购买数目
+      maxNum: 5
+    }
+    computed = {
+      // 返回当前图片/颜色
+      imgIndex() {
+        return this.proImg[this.colorIndex]
+      },
+      // 返回当前版本/价格
+      textIndex() {
+        return this.edition[this.editionIndex]
+      }
+    }
+    methods = {
+      // 版本点击
+      selectEdition(item, index) {
+        this.editionIndex = index
+      },
+      // 颜色点击
+      selectColor(item, index) {
+        this.colorIndex = index
+      },
+      // 意外险
+      selectInsurance(item, index) {
+        if (this.insuranceIndex !== -1 && this.insuranceIndex === index) {
+          this.insuranceIndex = -1
+          this.Read = false
+          return
+        }
+        this.insuranceIndex = index
+        this.Read = true
+      },
+      // 阅读点击
+      selectRead() {
+        this.Read = !this.Read
+      },
+      // 确定购买
+      selectOK() {
+        wepy.showToast({
+          title: '请稍等',
+          icon: 'loading'
+        })
+        setTimeout(() => {
+          wepy.navigateTo({
+            url: `commodity-details?purchase=1`
+          })
+        }, 500)
+      },
+      // -
+      selectPrev() {
+        if (this.num <= 1) {
+          return
+        }
+        this.num--
+      },
+      // +
+      selectNext() {
+        if (this.num >= this.maxNum) {
+          return
+        }
+        this.num++
+      }
+    }
+    async init() {
+      let res = await getChoice()
+      this.title = res.data.pro_text
+      this.edition = res.data.pro_edition || []
+      this.proImg = res.data.pro_img
+      this.insurance = res.data.pro_Insurance || []
+      this.$apply()
+    }
+    async onLoad() {
+      await this.init()
+      this.vehicle = wepy.$instance.globalData.vehicle
+      this.$apply()
+    }
+  }
+</script>

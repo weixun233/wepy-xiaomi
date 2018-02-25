@@ -1,0 +1,17 @@
+<style scoped lang="sass">
+  .find
+</style>
+<template>
+  <view class="find"></view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class find extends wepy.page {
+    config = {}
+    components = {}
+    data = {}
+    methods = {}
+    onLoad() {}
+  }
+</script>

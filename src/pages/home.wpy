@@ -1,0 +1,17 @@
+<style scoped lang="sass">
+  .home
+</style>
+<template>
+  <view class="home"></view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class home extends wepy.page {
+    config = {}
+    components = {}
+    data = {}
+    methods = {}
+    onLoad() {}
+  }
+</script>

@@ -1,0 +1,202 @@
+<style lang="sass">
+  @import "../../common/css/_var"
+  .index-list
+    width: 100%
+    >.title
+      height: 70rpx
+      line-height: 70rpx
+      padding-left: 30rpx
+      font-weight: bold
+      font-size: 32rpx
+      color: $color-title
+    .main-product
+      position: relative
+      height: 360rpx
+      .text
+        padding: 40rpx 0 0 30rpx
+        .pro-title
+          color: $color-title
+          font-size: $font-size-32
+          font-weight: bold
+        .pro-small
+          line-height: 40rpx
+          color: $color-tab
+          font-size: $font-size-24
+        .pro-money
+          display: flex
+          align-items: flex-end
+          .price
+            margin-top: 6rpx
+            position: relative
+            padding-left: 20rpx
+            color: $color-money
+            font-size: $font-size-36
+            .price-icon
+              position: absolute
+              left: 0
+              top: 0
+              font-size: $font-size-24
+            .price-text
+              font-size: $font-size-24
+          .originalCost
+            text-decoration: line-through
+            color: $color-tab
+            font-size: $font-size-24
+      .img
+        width: 300rpx
+        position: absolute
+        right: 20rpx
+        bottom: 10rpx
+        text-align: center
+        .image
+          width: 230rpx
+    .main-recPro
+      height: 292rpx
+      image
+        width: 100%
+    .pro-ul
+      margin-top: 8rpx
+      display: flex
+      flex-wrap: wrap
+      align-items: center
+      justify-content: space-between
+      .pro-li
+        flex: 0 0 50%
+        box-sizing: border-box
+        text-align: center
+        .pro-image
+          width: 100%
+          height: 250rpx
+          .image
+            display: inline-block
+            width: 100%
+        .text
+          text-align: left
+          padding: 32rpx
+          box-sizing: border-box
+          .title
+            max-width: 80%
+            color: $color-title
+            font-size: $font-size-32
+          .small
+            max-width: 80%
+            color: $color-tab
+            font-size: $font-size-24
+          .money
+            color: $color-money
+            font-size: $font-size-36
+            .originalCost
+              margin-left: 20rpx
+              text-decoration: line-through
+              color: $color-tab
+              font-size: $font-size-28
+      .pro-li:nth-child(odd)
+        padding-right: 4rpx
+      .pro-li:nth-child(even)
+        padding-left: 4rpx
+</style>
+<template>
+  <view class="index-list">
+    <!--title-->
+    <view class="title" wx:if="{{IndexListData.name}}">{{IndexListData.name}}</view>
+    <!--主要商品-->
+    <view class="main-product" style="{{mainBgColor}}" @tap="selectDetails({{item}})" wx:if="{{IndexListData.top.url}}">
+      <view class="text">
+        <view class="pro-title" wx:if="{{IndexListData.top.title}}">
+          <text decode="{{true}}">{{IndexListData.top.title}}</text>
+        </view>
+        <view class="pro-small" wx:if="{{IndexListData.top.synopsis}}">
+          <text decode="{{true}}">{{IndexListData.top.synopsis}}</text>
+        </view>
+        <view class="pro-money">
+          <text class="price" wx:if="{{IndexListData.top.price}}">
+            <text class="price-icon">￥</text>
+            <text class="price-menoy">{{IndexListData.top.price}}</text>
+            <text class="price-text"></text>
+          </text>
+          <text class="originalCost" wx:if="{{IndexListData.top.originalCost}}">￥{{IndexListData.top.originalCost}}</text>
+        </view>
+      </view>
+      <view class="img">
+        <image class="image"
+               src="{{IndexListData.top.url}}"
+               mode="widthFix"
+               lazy-load="{{true}}"></image>
+      </view>
+    </view>
+    <!--推荐商品-->
+    <view class="main-recPro" wx:if="{{IndexListData.top.bgurl}}"  @tap="selectDetails({{item}})">
+      <image class="bgImage"
+             src="{{IndexListData.top.bgurl}}"
+             mode="widthFix"
+             lazy-load="{{true}}"></image>
+    </view>
+    <!--商品列表-->
+    <view class="pro-ul" wx:if="{{IndexListData.items}}">
+      <repeat for="{{IndexListData.items}}" key="index" index="index" item="item">
+        <view class="pro-li" @tap="selectDetails({{item}})">
+          <view class="pro-image" style="{{imgBgColor}}" wx:if="{{item.url}}">
+            <image class="image" src="{{item.url}}" mode="widthFix"></image>
+          </view>
+          <view class="text">
+            <view class="title" wx:if="{{item.title}}">
+              <wxc-elip>{{item.title}}</wxc-elip>
+            </view>
+            <view class="small" wx:if="{{item.synopsis}}">
+              <wxc-elip>{{item.synopsis}}</wxc-elip>
+            </view>
+            <view class="money">
+              <wxc-elip class="price" wx:if="{{item.price}}">{{item.price}}元</wxc-elip>
+              <wxc-elip class="originalCost" wx:if="{{item.originalCost}}">{{item.originalCost}}元</wxc-elip>
+            </view>
+          </view>
+        </view>
+      </repeat>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import {getRandomInt} from 'utils/utils'
+
+  export default class indexList extends wepy.component {
+    config = {
+      usingComponents: {
+        'wxc-elip': '../packages/@minui/wxc-elip/dist/index'
+      }
+    }
+    props = {
+      IndexListData: {
+        type: Array,
+        default: () => []
+      }
+    }
+    computed = {
+      // 生成随机颜色
+      mainBgColor() {
+        let max = this.bgColor.length
+        let index = getRandomInt(0, max)
+        return `background-color: ${this.bgColor[index]}`
+      },
+      // list随机颜色
+      imgBgColor() {
+        let max = this.bgList.length
+        let index = getRandomInt(0, max)
+        return `background-color: ${this.bgList[index]}`
+      }
+    }
+    data = {
+      bgColor: ['#E3E2E8', '#D1DBDD', '#F6ECEA', '#E7DD96', '#E9D8C4', '#CECECE'],
+      bgList: ['#EDD1BC', '#F7ECEA', '#EDD1BC', '#A9CEE1', '#F4CDC6', '#C1DDE9', '#D8D8B4', '#ADA493', '#D5B795', '#C1DBEA', '#C0CBE1']
+    }
+    methods = {
+      // 跳转商品详情
+      selectDetails(item) {
+        wepy.navigateTo({
+          url: 'commodity-details'
+        })
+      }
+    }
+    onLoad() {}
+  }
+</script>

@@ -1,0 +1,82 @@
+<style lang="sass">
+  @import "common/css/_icon"
+  @import "common/css/_var"
+  .hr_10
+    width: 100%
+    height: 10rpx
+    background: $color-bg
+</style>
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/classify',
+      'pages/find',
+      'pages/vehicle',
+      'pages/home',
+      'pages/commodity-details',
+      'pages/commodity-choice'
+    ],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: 'black'
+    },
+    tabBar: {
+      color: '#666',
+      selectedColor: '#FF6700',
+      backgroundColor: '#fff',
+      borderStyle: 'black',
+      list: [
+        {
+          pagePath: 'pages/index',
+          text: '首页',
+          iconPath: './common/icon/index.png',
+          selectedIconPath: './common/icon/index-active.png'
+        },
+        {
+          pagePath: 'pages/classify',
+          text: '分类',
+          iconPath: './common/icon/classify.png',
+          selectedIconPath: './common/icon/classify-active.png'
+        },
+        {
+          pagePath: 'pages/find',
+          text: '发现',
+          iconPath: './common/icon/find.png',
+          selectedIconPath: './common/icon/find-active.png'
+        },
+        {
+          pagePath: 'pages/vehicle',
+          text: '购物车',
+          iconPath: './common/icon/vehicle.png',
+          selectedIconPath: './common/icon/vehicle-active.png'
+        },
+        {
+          pagePath: 'pages/home',
+          text: '我的',
+          iconPath: './common/icon/home.png',
+          selectedIconPath: './common/icon/home-active.png'
+        }
+      ]
+    }
+  }
+  globalData = {
+    userInfo: null,     // user
+    vehicle: []         // 购物车
+  }
+  constructor () {
+    super()
+    this.use('promisify')
+    this.use('requestfix')
+  }
+  onLaunch() {
+    console.log('onLaunch')
+  }
+}
+</script>

@@ -1,0 +1,36 @@
+<style lang="sass">
+  @import "../../common/css/_var"
+  .proMoney
+    .price
+      color: $color-money
+      font-size: $font-size-36
+    .originalCost
+      padding: 0 10rpx
+      color: $color-tab
+      font-size: $font-size-24
+      text-decoration: line-through
+    .tags
+      color: #fff
+      padding: 0 4rpx
+      font-size: $font-size-22
+      background: $color-money
+      border-radius: 8rpx
+</style>
+<template>
+  <view class="proMoney">
+    <text class="price">{{moneyInfo.price}}元</text>
+    <text class="originalCost" wx:if="{{moneyInfo.originalCost}}">{{moneyInfo.originalCost}}元</text>
+    <text class="tags" wx:if="{{moneyInfo.tags}}">{{moneyInfo.tags}}</text>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  export default class proMoney extends wepy.component {
+    props = {
+      moneyInfo: {
+        type: String,
+        default: ''
+      }
+    }
+  }
+</script>

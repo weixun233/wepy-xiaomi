@@ -1,0 +1,19 @@
+<style scoped lang="sass">
+  .classify
+</style>
+<template>
+  <view class="classify">
+
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class classify extends wepy.page {
+    config = {}
+    components = {}
+    data = {}
+    methods = {}
+    onLoad() {}
+  }
+</script>

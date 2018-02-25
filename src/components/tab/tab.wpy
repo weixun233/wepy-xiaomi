@@ -1,0 +1,57 @@
+<style lang="sass">
+  @import "../../common/css/_var"
+  .tab
+    .tab-nav
+      display: flex
+      align-items: center
+      justify-content: space-between
+      .tab-li
+        flex: 0 0 33%
+        font-size: $font-size-24
+        text-align: center
+        .tab-text
+          display: inline-block
+          padding: 20rpx 0
+          border-bottom: 2px solid transparent
+      .active
+        .tab-text
+          color: $color-brand
+          border-bottom-color: $color-brand
+</style>
+<template>
+  <view class="tab">
+    <view class="tab-nav">
+      <repeat for="{{tabTitle}}" key="index" index="index" item="item">
+        <view class="tab-li {{currentIndex === index ? 'active' : ''}}" @tap="selectNav({{index}})">
+          <view class="tab-text">{{item}}</view>
+        </view>
+      </repeat>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class tab extends wepy.component {
+    config = {}
+    props = {
+      tabTitle: {
+        type: Array,
+        default: () => []
+      },
+      currentIndex: {
+        type: Number,
+        default: 0,
+        twoWay: true
+      }
+    }
+    computed = {}
+    data = {}
+    methods = {
+      selectNav(index) {
+        this.currentIndex = index
+      }
+    }
+    onLoad() {}
+  }
+</script>
