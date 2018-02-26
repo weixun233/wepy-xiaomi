@@ -191,15 +191,16 @@
       this.$apply()
     }
     async onLoad(options) {
-      let purchase = options.purchase
       await this.init()
-      if (purchase === '1') {
+      this.$apply()
+    }
+    onShow() {
+      this.vehicleNum = wepy.$instance.globalData.vehicle.length
+      if (this.vehicleNum > 0) {
         wepy.showToast({
           title: '成功加入购物车'
         })
       }
-      this.vehicleNum = wepy.$instance.globalData.vehicle.length
-      this.$apply()
     }
   }
 </script>

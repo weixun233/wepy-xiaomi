@@ -263,10 +263,9 @@
           title: '请稍等',
           icon: 'loading'
         })
+        wepy.$instance.globalData.vehicle.push(1)
         setTimeout(() => {
-          wepy.navigateTo({
-            url: `commodity-details?purchase=1`
-          })
+          wepy.navigateBack()
         }, 500)
       },
       // -
